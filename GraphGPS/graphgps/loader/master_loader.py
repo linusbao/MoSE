@@ -33,6 +33,9 @@ import os
 sys.path.append(os.path.join(Path(__file__).parent.parent.parent.parent, 'hombasis-gt','hombasis-bench'))
 from data import get_data
 
+sys.path.append(os.path.join(Path(__file__).parent.parent.parent.parent, 'hombasis-gt', 'pcqm'))
+import get_pcqm_data
+
 sys.path.append(os.path.join(Path(__file__).parent.parent.parent.parent, 'hombasis-gt','qm9','data_GraphGym_QM9'))
 from CustomDataset import CustomDataset
 
@@ -168,6 +171,14 @@ def load_dataset_master(format, name, dataset_dir):
         elif name.startswith('PCQM4Mv2-'):
             subset = name.split('-', 1)[1]
             dataset = preformat_OGB_PCQM4Mv2(dataset_dir, subset)
+
+        elif name.startswith('PCQM4Mv2+All5'):
+            subset = name.split('-', 1)[1]
+            dataset = preformat_OGB_PCQM4Mv2(dataset_dir, subset, 'All5')
+            
+        elif name.startswith('PCQM4Mv2+Spasm'):
+            subset = name.split('-', 1)[1]
+            dataset = preformat_OGB_PCQM4Mv2(dataset_dir, subset, 'Spasm')
 
         elif name.startswith('peptides-'):
             dataset = preformat_Peptides(dataset_dir, name)
@@ -398,7 +409,7 @@ def preformat_OGB_Graph(dataset_dir, name):
     return dataset
 
 
-def preformat_OGB_PCQM4Mv2(dataset_dir, name):
+def preformat_OGB_PCQM4Mv2(dataset_dir, name, homcount_type):
     """Load and preformat PCQM4Mv2 from OGB LSC.
 
     OGB-LSC provides 4 data index splits:
@@ -442,6 +453,7 @@ def preformat_OGB_PCQM4Mv2(dataset_dir, name):
                       ]
 
     elif name == 'subset':
+        print('in PCQM subset loader!!')
         # Further subset the training set for faster debugging.
         subset_ratio = 0.1
         subtrain_idx = train_idx[:int(subset_ratio * len(train_idx))]
@@ -449,10 +461,37 @@ def preformat_OGB_PCQM4Mv2(dataset_dir, name):
         subtest_idx = split_idx['valid']  # The original 'valid' as testing set.
 
         dataset = dataset[torch.cat([subtrain_idx, subvalid_idx, subtest_idx])]
+        
+        print(type(dataset))
+        
         data_list = [data for data in dataset]
+        print(data_list[0])
+        
+        print('adding homcounts!!')
+        data_dir = os.path.join(Path(__file__).parent.parent.parent.parent, 'hombasis-gt','pcqm', 'data')
+        
+        if homcount_type == 'All5':
+            homcount_file = 'pcqm_v5.json'
+        elif homcount_type == 'Spasm':
+            homcount_file = 'pcqm_c78.json'
+        else:
+            raise ValueError(f'Invalid homcount type')
+        
+        data_list = get_pcqm_data.add_pcqm_hom(homcount_file, data_dir, data_list)
+
+        print('done adding homcounts!!')
+        print(data_list[0])
+
+        
         dataset._indices = None
         dataset._data_list = data_list
         dataset.data, dataset.slices = dataset.collate(data_list)
+        
+        print('after coallating!!')
+        print(type(dataset.data))
+        # assert False
+        
+        
         n1, n2, n3 = len(subtrain_idx), len(subvalid_idx), len(subtest_idx)
         split_idxs = [list(range(n1)),
                       list(range(n1, n1 + n2)),

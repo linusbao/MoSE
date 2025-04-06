@@ -36,6 +36,9 @@ To set up the data necessary for MoSE experiments on ZINC, unzip the `hombasis-g
 ## QM9 Data Setup
 To set up the data necessary for MoSE experiments on QM9, unzip the file `hombasis-gt/qm9/data/QM9/v5_homcounts.zip`, and move the resulting files (`test_homcounts.json`, `train_homcounts.json`, `valid_homcounts.json`) into the `hombasis-gt/qm9/data/QM9` directory. Then, run the python script `hombasis-gt/qm9/data_GraphGym_QM9/save_qm9_hc.py` in order to process the count-enhanced QM9 dataset (will be saved as `datasets/QM9-GraphHC/processed/joined.pt`). It may take a few minutes for `save_qm9_hc.py` to run.
 
+## PCQM4Mv2-subset Data Setup
+Get the MoSE enhanced PCQM4Mv2-subset dataset file [here](https://drive.google.com/drive/folders/1NjdueZ3D9sJWX2n4f3P5loYgRxmYF2LN?usp=sharing). Set up the dataset by unzipping the downloaded file into the `hombasis-gt/pcqm/data` directory.
+
 ## Synth Data Setup
 To set up our synthetic dataset, run the script `hombasis-gt/synth/save_synth_dataset.py` (this will save the homomorphism count enhanced datasets to `datasets/SYNTH-All5/processed` and `datasets/SYNTH-Spasm/processed`). 
 
