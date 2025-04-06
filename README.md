@@ -45,6 +45,9 @@ Get the MoSE enhanced CIFAR10 and MNIST dataset files [here](https://drive.googl
 ## Synth Data Setup
 To set up our synthetic dataset, run the script `hombasis-gt/synth/save_synth_dataset.py` (this will save the homomorphism count enhanced datasets to `datasets/SYNTH-All5/processed` and `datasets/SYNTH-Spasm/processed`). 
 
+## Peptides Data Setup
+To set up the MoSE enhanced Peptides Functional and Structural dataset, simply unzip the `hombasis-gt/peptides/data/raw_data.zip` file and move the resulting json files (`peptides_c78.json` and `peptides_v5c6.json`) into the `hombasis-gt/peptides/data` directory.
+
 ## Running Experiments
 To run an experiment, set up a `configuration.yaml` file containing the model hyperparameters and experimental setup such as those given in the `GraphGPS/configs/` directory. Then, run:
 
