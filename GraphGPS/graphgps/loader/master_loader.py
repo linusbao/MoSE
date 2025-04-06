@@ -25,7 +25,7 @@ from graphgps.transform.task_preprocessing import task_specific_preprocessing
 from graphgps.transform.transforms import (pre_transform_in_memory,
                                            typecast_x, concat_x_and_pos,
                                            clip_graphs_to_size)
-
+from torch_geometric.transforms import VirtualNode
 
 from pathlib import Path
 import sys
@@ -679,7 +679,7 @@ def preformat_ZINC(dataset_dir, name, postfix=None):
         count_files = ['zinc_with_homs_c7.json', 'zinc_with_homs_c8.json']
         idx_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 , 11, 15, 20, 21, 22, 24, 25, 27, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46]
         sub_file = 'zinc_3to8C_multhom.json'
-        if cfg.dataset.virtual_node == True:
+        if hasattr(cfg.dataset, 'virtual_node') and cfg.dataset.virtual_node == True:
             dataset = get_data.add_zinc_subhom_vn(name='ZINC', hom_files=count_files, idx_list=idx_list, sub_file=sub_file, root=data_dir, dataset=dataset)
         else:
             dataset = get_data.add_zinc_subhom(name='ZINC', hom_files=count_files, idx_list=idx_list, sub_file=sub_file, root=data_dir, dataset=dataset)
