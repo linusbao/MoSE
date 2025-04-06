@@ -33,6 +33,9 @@ import os
 sys.path.append(os.path.join(Path(__file__).parent.parent.parent.parent, 'hombasis-gt','hombasis-bench'))
 from data import get_data
 
+sys.path.append(os.path.join(Path(__file__).parent.parent.parent.parent, 'hombasis-gt')) #FLAGother
+from image-datasets import add_data
+
 sys.path.append(os.path.join(Path(__file__).parent.parent.parent.parent, 'hombasis-gt', 'pcqm'))
 import get_pcqm_data
 
@@ -293,7 +296,7 @@ def compute_indegree_histogram(dataset):
     return deg.numpy().tolist()[:max_degree + 1]
 
 
-def preformat_GNNBenchmarkDataset(dataset_dir, name):
+def preformat_GNNBenchmarkDataset(dataset_dir, name): #FLAGother
     """Load and preformat datasets from PyG's GNNBenchmarkDataset.
 
     Args:
@@ -303,11 +306,29 @@ def preformat_GNNBenchmarkDataset(dataset_dir, name):
     Returns:
         PyG dataset object
     """
+    data_dir = os.path.join(Path(__file__).parent.parent.parent.parent, 'hombasis-gt','image-datasets', 'data')
+    homcount_name = None
     if name in ['MNIST', 'CIFAR10']:
         tf_list = [concat_x_and_pos]  # concat pixel value and pos. coordinate
         tf_list.append(partial(typecast_x, type_str='float'))
     elif name in ['PATTERN', 'CLUSTER', 'CSL']:
         tf_list = []
+    elif name in ['MNIST-Spasm', 'CIFAR10-Spasm', 'MNIST-All5', 'CIFAR10-All5']:
+        tf_list = [concat_x_and_pos]  # concat pixel value and pos. coordinate
+        tf_list.append(partial(typecast_x, type_str='float'))
+        dataset_name, homcount_name = name.split('-', 1)
+        if dataset_name == 'MNIST':
+            data_dir = os.path.join(data_dir, 'MNIST')
+            if homcount_name == 'Spasm':
+                hom_files = ['mnist_c7.json','mnist_c8.json']
+            elif homcount_name == 'All5':
+                hom_files = ['mnist_v5.json']
+        elif dataset_name == 'CIFAR10':
+            data_dir = os.path.join(data_dir, 'CIFAR')
+            if homcount_name == 'Spasm':
+                hom_files = ['cifar_c7.json','cifar_c8.json']
+            elif homcount_name == 'All5':
+                hom_files = ['cifar_v5.json']
     else:
         raise ValueError(f"Loading dataset '{name}' from "
                          f"GNNBenchmarkDataset is not supported.")
@@ -318,6 +339,13 @@ def preformat_GNNBenchmarkDataset(dataset_dir, name):
             for split in ['train', 'val', 'test']]
         )
         pre_transform_in_memory(dataset, T.Compose(tf_list))
+    elif homcount_name != None:
+        dataset = join_dataset_splits(
+            [GNNBenchmarkDataset(root=dataset_dir, name=dataset_name, split=split)
+            for split in ['train', 'val', 'test']]
+        )
+        pre_transform_in_memory(dataset, T.Compose(tf_list))
+        dataset = add_data.add_hom(hom_files=hom_files,idx_list=[],root=data_dir,dataset=dataset)
     elif name == 'CSL':
         dataset = GNNBenchmarkDataset(root=dataset_dir, name=name)
 

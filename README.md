@@ -39,6 +39,9 @@ To set up the data necessary for MoSE experiments on QM9, unzip the file `hombas
 ## PCQM4Mv2-subset Data Setup
 Get the MoSE enhanced PCQM4Mv2-subset dataset file [here](https://drive.google.com/drive/folders/1NjdueZ3D9sJWX2n4f3P5loYgRxmYF2LN?usp=sharing). Set up the dataset by unzipping the downloaded file and moving all resulting json files into the `hombasis-gt/pcqm/data` directory.
 
+## CIFAR10 & MNIST Data Setup
+Get the MoSE enhanced CIFAR10 and MNIST dataset files [here](https://drive.google.com/drive/folders/1NjdueZ3D9sJWX2n4f3P5loYgRxmYF2LN?usp=sharing). Set up the datasets by unzipping the downloaded files into the `hombasis-gt/image-datasets/data` directory.
+
 ## Synth Data Setup
 To set up our synthetic dataset, run the script `hombasis-gt/synth/save_synth_dataset.py` (this will save the homomorphism count enhanced datasets to `datasets/SYNTH-All5/processed` and `datasets/SYNTH-Spasm/processed`). 
 
